@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.carmengitit.prioritytodo.databinding.FragmentHomeBinding;
-import com.carmengitit.prioritytodo.databinding.FragmentAddTaskBinding;
 import com.carmengitit.prioritytodo.model.TaskList;
 
 import java.util.Date;
