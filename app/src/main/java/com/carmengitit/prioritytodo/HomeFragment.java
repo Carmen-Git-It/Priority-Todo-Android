@@ -1,6 +1,7 @@
 package com.carmengitit.prioritytodo;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,25 +32,23 @@ public class HomeFragment extends Fragment {
 
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // TEMPORARY SEEDING
-        TaskList.Task t = new TaskList.Task("Laundry", "Do a couple loads of " +
-                "laundry, make sure to use fabric softener this time", 4, new Date());
-        TaskList.tasks.add(t);
-
         TaskList.Task task = TaskList.getNextTask();
 
-        binding.textHomeTaskName.setText(task.title);
-        binding.textHomeTaskDate.setText(task.dateDue.toString());
-        binding.textHomeTaskDescription.setText(task.description);
-        binding.textHomeTaskPriority.setText(String.valueOf(task.priority));
+        Log.i("TODO", "load");
+
+        if (task == null) {
+            binding.textHomeTaskName.setText("No Tasks In List!");
+        } else {
+            binding.textHomeTaskName.setText(task.name);
+            binding.textHomeTaskDate.setText(task.dateDue.toString());
+            binding.textHomeTaskDescription.setText(task.description);
+            binding.textHomeTaskPriority.setText(String.valueOf(task.priority));
+        }
 
         binding.fabHome.setOnClickListener(v ->
                 NavHostFragment.findNavController(HomeFragment.this)
                         .navigate(R.id.action_FirstFragment_to_SecondFragment)
         );
-
-
     }
 
     @Override

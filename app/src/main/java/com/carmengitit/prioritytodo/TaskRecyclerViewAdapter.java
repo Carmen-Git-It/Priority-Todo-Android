@@ -33,7 +33,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).title);
+        holder.mIdView.setText(mValues.get(position).name);
         holder.mContentView.setText(mValues.get(position).description);
     }
 
