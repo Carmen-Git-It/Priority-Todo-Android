@@ -3,8 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.carmengitit.prioritytodo.MainActivity">
     <item
+        android:id="@+id/action_home"
+        android:icon="@drawable/baseline_home_24"
+        android:orderInCategory="100"
+        android:title="Home"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_list"
+        android:icon="@drawable/baseline_view_list_24"
+        android:orderInCategory="100"
+        android:title="All Tasks"
+        app:showAsAction="always" />
+    <item
         android:id="@+id/action_settings"
+        android:icon="@drawable/baseline_settings_24"
         android:orderInCategory="100"
         android:title="@string/action_settings"
-        app:showAsAction="never" />
+        app:showAsAction="always" />
 </menu>

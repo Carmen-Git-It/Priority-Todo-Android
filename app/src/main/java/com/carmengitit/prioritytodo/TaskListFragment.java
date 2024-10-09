@@ -19,6 +19,8 @@ import com.carmengitit.prioritytodo.model.TaskList;
  */
 public class TaskListFragment extends Fragment {
 
+    // TODO: FINISH TASK VIEW
+
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
