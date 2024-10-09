@@ -1,7 +1,6 @@
 package com.carmengitit.prioritytodo;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.carmengitit.prioritytodo.databinding.FragmentHomeBinding;
 import com.carmengitit.prioritytodo.model.TaskList;
 
-import java.util.Date;
+import java.text.DateFormat;
 
 public class HomeFragment extends Fragment {
 
@@ -34,15 +33,16 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         TaskList.Task task = TaskList.getNextTask();
 
-        Log.i("TODO", "load");
-
         if (task == null) {
             binding.textHomeTaskName.setText("No Tasks In List!");
+            binding.textHomeTaskPriority.setText("");
+            binding.textHomeTaskDescription.setText("");
+            binding.textHomeTaskDate.setText("");
         } else {
             binding.textHomeTaskName.setText(task.name);
-            binding.textHomeTaskDate.setText(task.dateDue.toString());
+            binding.textHomeTaskDate.setText("Due date: " + DateFormat.getDateInstance().format(task.dateDue));
             binding.textHomeTaskDescription.setText(task.description);
-            binding.textHomeTaskPriority.setText(String.valueOf(task.priority));
+            binding.textHomeTaskPriority.setText("Priority: " + String.valueOf(task.priority));
         }
 
         binding.fabHome.setOnClickListener(v ->

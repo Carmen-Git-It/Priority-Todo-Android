@@ -1,5 +1,7 @@
 package com.carmengitit.prioritytodo;
 
+import android.icu.util.Calendar;
+import android.icu.util.TimeZone;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,11 +42,14 @@ public class AddTaskFragment extends Fragment {
 
         MaterialDatePicker<Long> picker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("Select Due Date")
-                .setSelection(MaterialDatePicker.todayInUtcMilliseconds()).build();
+                .setSelection(MaterialDatePicker.todayInUtcMilliseconds() - 86400000).build();
         picker.addOnPositiveButtonClickListener(new MaterialPickerOnPositiveButtonClickListener<Long>() {
             @Override
             public void onPositiveButtonClick(Long selection) {
-                date = new Date(selection);
+                Calendar utc = Calendar.getInstance(TimeZone.getDefault());
+                utc.setTimeInMillis(selection);
+                utc.add(Calendar.DATE, 1);
+                date = utc.getTime();
                 binding.etAddTaskDate.setText(DateFormat.getDateInstance().format(date));
             }
         });

@@ -8,11 +8,19 @@ import java.util.List;
 
 public class TaskList {
     public static final List<Task> tasks = new ArrayList<Task>();
+    public static final List<Task> complete_tasks = new ArrayList<Task>();
 
-    public boolean removeTask(int index) {
-        // TODO: remove the task at the given index, return true if doable
+    public static int current_index = 0;
 
-        return false;
+    public static boolean removeTask(int index) {
+        if (index >= tasks.size()) {
+            return false;
+        }
+        Task task = tasks.get(index);
+        tasks.remove(index);
+
+        current_index = 0;
+        return true;
     }
 
     public static Task getNextTask() {
@@ -20,7 +28,34 @@ public class TaskList {
             return null;
         }
 
-        return tasks.get(0);
+        return tasks.get(current_index);
+    }
+
+    public static void skipTask() {
+        current_index++;
+        if (current_index >= tasks.size()) {
+            current_index = 0;
+        }
+    }
+
+    public static void completeTask() {
+        Task task = tasks.get(current_index);
+        task.complete = true;
+        complete_tasks.add(task);
+        tasks.remove(current_index);
+        if (current_index >= tasks.size()) {
+            current_index = tasks.size() - 1;
+        }
+    }
+
+    public static void completeTask(int index) {
+        Task task = tasks.get(index);
+        task.complete = true;
+        complete_tasks.add(task);
+        tasks.remove(index);
+        if (current_index >= tasks.size()) {
+            current_index = tasks.size() - 1;
+        }
     }
 
     public static void addTask(String name, String description, int priority, Date dateDue) {
@@ -42,12 +77,14 @@ public class TaskList {
         public String description;
         public int priority;
         public Date dateDue;
+        public boolean complete;
 
         public Task(String name, String description, int priority, Date dateDue) {
             this.name = name;
             this.description = description;
             this.priority = priority;
             this.dateDue = dateDue;
+            this.complete = false;
         }
 
         @Override
@@ -70,6 +107,7 @@ public class TaskList {
                 value = (((priority + 1)^3) * 1000) / daysLeft;
             }
             else {
+                Log.i("TODO", "Past due / due today");
                 value = ((priority + 1)^2) * 10000;
             }
 
