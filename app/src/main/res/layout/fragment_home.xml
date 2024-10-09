@@ -21,7 +21,7 @@
             android:layout_marginEnd="20dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView">
+            app:layout_constraintTop_toBottomOf="@+id/txt_home_welcome">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -91,7 +91,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/text_home_task_date" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button2"
+                    android:id="@+id/btn_home_task_card_complete"
                     style="@style/Widget.Material3.Button.IconButton.Filled"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/textView"
+            android:id="@+id/txt_home_welcome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"

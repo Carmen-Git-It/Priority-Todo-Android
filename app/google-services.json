@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "151062676414",
+    "project_id": "priority-todo-15e31",
+    "storage_bucket": "priority-todo-15e31.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:151062676414:android:390ebe9e4a18b637dd2fef",
+        "android_client_info": {
+          "package_name": "com.carmengitit.prioritytodo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "151062676414-2t8o88mkikqg80eg9igo1pnv19101d1a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.carmengitit.prioritytodo",
+            "certificate_hash": "887486452f5536ae8085f94d5a7e923d4129619f"
+          }
+        },
+        {
+          "client_id": "151062676414-mvtrgldba9a4gjalej161l00n3bk6fqa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAl8S7jNu5AxnD80J8_UHqx4IJ3v8Owfaw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "151062676414-mvtrgldba9a4gjalej161l00n3bk6fqa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

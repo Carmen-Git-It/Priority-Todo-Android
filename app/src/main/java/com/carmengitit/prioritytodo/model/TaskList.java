@@ -10,7 +10,7 @@ public class TaskList {
     public static final List<Task> tasks = new ArrayList<Task>();
     public static final List<Task> complete_tasks = new ArrayList<Task>();
 
-    public static int current_index = 0;
+    private static int current_index = 0;
 
     public static boolean removeTask(int index) {
         if (index >= tasks.size()) {
@@ -32,6 +32,9 @@ public class TaskList {
     }
 
     public static void skipTask() {
+        if (tasks.isEmpty()) {
+            return;
+        }
         current_index++;
         if (current_index >= tasks.size()) {
             current_index = 0;
@@ -39,11 +42,14 @@ public class TaskList {
     }
 
     public static void completeTask() {
+        if (tasks.isEmpty()) {
+            return;
+        }
         Task task = tasks.get(current_index);
         task.complete = true;
         complete_tasks.add(task);
         tasks.remove(current_index);
-        if (current_index >= tasks.size()) {
+        if (current_index >= tasks.size() && !tasks.isEmpty()) {
             current_index = tasks.size() - 1;
         }
     }
@@ -56,6 +62,10 @@ public class TaskList {
         if (current_index >= tasks.size()) {
             current_index = tasks.size() - 1;
         }
+    }
+
+    public static void resetIndex() {
+        current_index = 0;
     }
 
     public static void addTask(String name, String description, int priority, Date dateDue) {
