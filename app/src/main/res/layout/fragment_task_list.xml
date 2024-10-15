@@ -27,7 +27,7 @@
                 android:layout_marginEnd="16dp"
                 android:text="Name"
                 android:textAppearance="?attr/textAppearanceListItem"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_task_card_complete"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -40,7 +40,7 @@
                 android:layout_marginEnd="16dp"
                 android:text="Description"
                 android:textAppearance="?attr/textAppearanceListItem"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/btn_task_card_complete"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/txt_task_card_name" />
 
@@ -74,6 +74,20 @@
                 app:layout_constraintTop_toBottomOf="@+id/txt_task_card_priority" />
 
             <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_task_card_complete"
+                style="@style/Widget.Material3.Button.IconButton.Filled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                app:backgroundTint="@color/md_theme_tertiary"
+                app:icon="@drawable/baseline_check_24"
+                app:iconSize="32dp"
+                app:layout_constraintBottom_toTopOf="@+id/btn_task_card_delete"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_task_card_delete"
                 style="@style/Widget.Material3.Button.IconButton.Filled"
                 android:layout_width="wrap_content"
@@ -85,6 +99,7 @@
                 app:iconSize="32dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>

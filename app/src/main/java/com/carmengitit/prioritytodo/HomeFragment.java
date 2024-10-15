@@ -2,6 +2,7 @@ package com.carmengitit.prioritytodo;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,14 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        binding.btnHomeBackToStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TaskList.resetIndex();
+                setTask();
+            }
+        });
+
         binding.fabHome.setOnClickListener(v ->
                 NavHostFragment.findNavController(HomeFragment.this)
                         .navigate(R.id.action_FirstFragment_to_SecondFragment)
@@ -62,32 +71,35 @@ public class HomeFragment extends Fragment {
             binding.txtHomeWelcome.setText("Welcome " + user.getDisplayName());
         }
 
-        setTask();
-
-        if (TaskList.tasks.isEmpty() && !TaskList.initialRequestCompleted) {
-            handler = new Handler();
-            updateUI.run();
-        }
+        handler = new Handler();
+        updateUI.run();
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (TaskList.tasks.isEmpty()) {
-            updateUI.run();
-        }
+        updateUI.run();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        handler.removeCallbacks(updateUI);
+        try {
+            handler.removeCallbacks(updateUI);
+        } catch(NullPointerException e) {
+            Log.d(MainActivity.TAG, "Error: " + e.getMessage());
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        handler.removeCallbacks(updateUI);
+        try {
+            handler.removeCallbacks(updateUI);
+        } catch(NullPointerException e) {
+            Log.d(MainActivity.TAG, "Error: " + e.getMessage());
+        }
+
     }
 
     Runnable updateUI = new Runnable() {
@@ -101,7 +113,8 @@ public class HomeFragment extends Fragment {
                 }
             } finally {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (!TaskList.initialRequestCompleted || user == null || TaskList.tasks.isEmpty()){
+                if (!TaskList.initialRequestCompleted || user == null
+                        || TaskList.tasks.isEmpty() || !TaskList.queryComplete){
                     handler.postDelayed(updateUI, 300);
                 }
             }

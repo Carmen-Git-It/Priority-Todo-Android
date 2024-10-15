@@ -33,9 +33,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
         return new ViewHolder(FragmentTaskListBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false));
-
     }
 
     @Override
@@ -43,7 +41,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         holder.mItem = mValues.get(position);
         holder.mNameView.setText(mValues.get(position).name);
         holder.mDescriptionView.setText(mValues.get(position).description);
-        holder.mPriorityView.setText("Priority: " + mValues.get(position).priority);
+        holder.mPriorityView.setText("Priority: " + mValues.get(position).priority + " | " + mValues.get(position).getValue());
         holder.mDateView.setText("Date due: " + DateFormat.getDateInstance()
                 .format(mValues.get(position).dateDue));
         holder.mDeleteButtonView.setOnClickListener(new View.OnClickListener() {
@@ -51,6 +49,15 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
             public void onClick(View v) {
                 int currPos = holder.getBindingAdapterPosition();
                 TaskList.removeTask(currPos);
+                notifyItemRemoved(currPos);
+            }
+        });
+
+        holder.mCompleteButtonView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int currPos = holder.getBindingAdapterPosition();
+                TaskList.completeTask(currPos);
                 notifyItemRemoved(currPos);
             }
         });
@@ -77,6 +84,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         public final TextView mPriorityView;
         public final TextView mDateView;
         public final MaterialButton mDeleteButtonView;
+        public final MaterialButton mCompleteButtonView;
         public final MaterialCardView mCardView;
         public Task mItem;
 
@@ -87,6 +95,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
             mPriorityView = binding.txtTaskCardPriority;
             mDateView = binding.txtTaskCardDate;
             mDeleteButtonView = binding.btnTaskCardDelete;
+            mCompleteButtonView = binding.btnTaskCardComplete;
             mCardView = binding.cardTaskListItem;
         }
 

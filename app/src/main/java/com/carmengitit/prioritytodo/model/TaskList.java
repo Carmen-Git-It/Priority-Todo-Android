@@ -10,7 +10,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -78,13 +77,19 @@ public class TaskList {
                             if(task.isSuccessful()) {
                                 tasks.clear();
                                 for (QueryDocumentSnapshot document : task.getResult()) {
+
                                     Task newTask = new Task((String)document.get("name"),
                                             (String)document.get("description"),
                                             (long) document.get("priority"),
                                             new Date((long)document.get("date")),
                                             (boolean)document.get("complete"));
                                     newTask.uid = document.getId();
-                                    tasks.add(newTask);
+                                    if (!(boolean) document.get("complete")) {
+                                        tasks.add(newTask);
+                                    } else {
+                                        complete_tasks.add(newTask);
+                                    }
+
                                 }
                                 Log.i(MainActivity.TAG, "Tasks loaded");
                                 sortTasks();
@@ -102,6 +107,7 @@ public class TaskList {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
+            queryComplete = false;
             Map<String, Object> task_map = new HashMap<>();
             task_map.put("complete", new_task.complete);
             task_map.put("date", new_task.dateDue.getTime());
@@ -109,40 +115,24 @@ public class TaskList {
             task_map.put("name", new_task.name);
             task_map.put("priority", new_task.priority);
 
-            if (tasks.isEmpty() && complete_tasks.isEmpty()) {
-                Log.i(MainActivity.TAG, "Empty list creating collection");
-                db.collection("users")
-                        .document(user.getUid())
-                        .collection("tasks")
-                        .add(task_map)
-                        .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                            @Override
-                            public void onComplete(@NonNull com.google.android.gms.tasks.Task<DocumentReference> task) {
-                                if (task.isSuccessful()) {
-                                    new_task.uid = task.getResult().getId();
-                                    tasks.add(new_task);
-                                    sortTasks();
-                                    Log.i(MainActivity.TAG, "Successfully created collection");
-                                } else {
-                                    Log.e(MainActivity.TAG, "Failed to create collection: " + task.getException());
-                                }
+            db.collection("users")
+                    .document(user.getUid())
+                    .collection("tasks")
+                    .add(task_map)
+                    .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                        @Override
+                        public void onComplete(@NonNull com.google.android.gms.tasks.Task<DocumentReference> task) {
+                            if (task.isSuccessful()) {
+                                new_task.uid = task.getResult().getId();
+                                tasks.add(new_task);
+                                sortTasks();
+                                Log.i(MainActivity.TAG, "Successfully created collection");
+                            } else {
+                                Log.e(MainActivity.TAG, "Failed to create collection: " + task.getException());
                             }
-                        });
-            }
-            else {
-                db.collection("users")
-                        .document(user.getUid())
-                        .collection("tasks")
-                        .add(task_map)
-                        .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                            @Override
-                            public void onComplete(@NonNull com.google.android.gms.tasks.Task<DocumentReference> task) {
-                                if (task.isSuccessful()) {
-                                    Log.i(MainActivity.TAG, "New task added");
-                                }
-                            }
-                        });
-            }
+                            queryComplete = true;
+                        }
+                    });
         }
     }
 
@@ -151,7 +141,7 @@ public class TaskList {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        Log.d(MainActivity.TAG, "Editing task");
+        Log.i(MainActivity.TAG, "Editing task");
 
         if (user != null) {
             db.collection("users")
@@ -176,6 +166,32 @@ public class TaskList {
         }
     }
 
+    private static void dbRemoveTask(Task removed_task) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        Log.i(MainActivity.TAG, "Removing task");
+
+        if (user != null) {
+            db.collection("users")
+                    .document(user.getUid())
+                    .collection("tasks")
+                    .document(removed_task.uid)
+                    .delete()
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.i(MainActivity.TAG, "Task successfully deleted");
+                            } else {
+                                Log.i(MainActivity.TAG, "Task delete failed");
+                            }
+                        }
+                    });
+        }
+    }
+
     public static void editTask(int index, Task task) {
         if (index >= 0 && index < tasks.size() && task != null) {
             // Make the change locally
@@ -191,6 +207,8 @@ public class TaskList {
         }
     }
 
+
+    // TODO: Set this up with database
     public static void removeTask(int index) {
         if (index >= tasks.size()) {
             return;
@@ -198,7 +216,11 @@ public class TaskList {
         Task task = tasks.get(index);
         tasks.remove(index);
 
-        current_index = 0;
+        if (current_index >= tasks.size()) {
+            current_index = tasks.size() - 1;
+        }
+
+        dbRemoveTask(task);
     }
 
     public static Task getNextTask() {
@@ -228,6 +250,7 @@ public class TaskList {
     }
 
     public static void completeTask() {
+        // Local changes
         if (tasks.isEmpty()) {
             return;
         }
@@ -238,9 +261,14 @@ public class TaskList {
         if (current_index >= tasks.size() && !tasks.isEmpty()) {
             current_index = tasks.size() - 1;
         }
+
+        // Push change to db
+        dbEditTask(task);
     }
 
+    // TODO: set this up with db
     public static void completeTask(int index) {
+        // Local changes
         Task task = tasks.get(index);
         task.complete = true;
         complete_tasks.add(task);
@@ -248,6 +276,9 @@ public class TaskList {
         if (current_index >= tasks.size()) {
             current_index = tasks.size() - 1;
         }
+
+        // Push change to db
+        dbEditTask(task);
     }
 
     public static void resetIndex() {
@@ -260,7 +291,9 @@ public class TaskList {
             long aValue = a.getValue();
             long bValue = b.getValue();
 
-            return Long.compare(aValue, bValue);
+            return bValue == aValue ?
+                    Long.compare(a.dateDue.getTime(), b.dateDue.getTime()) :
+                    Long.compare(bValue, aValue);
         });
     }
 
@@ -309,14 +342,11 @@ public class TaskList {
             int daysLeft = getDaysLeft();
             long value;
 
-            Log.i("TODO", String.valueOf(daysLeft));
-
             if (daysLeft > 0) {
                 value = (((priority + 1)^3) * 1000) / daysLeft;
             }
             else {
-                Log.i("TODO", "Past due / due today");
-                value = ((priority + 1)^2) * 10000;
+                value = ((priority + 1)^2) * 10000 + (long) (-20000) * daysLeft;
             }
 
             return value;
