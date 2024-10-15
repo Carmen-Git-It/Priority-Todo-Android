@@ -35,8 +35,6 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setTask();
-
         binding.btnHomeTaskCardSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,8 +62,12 @@ public class HomeFragment extends Fragment {
             binding.txtHomeWelcome.setText("Welcome " + user.getDisplayName());
         }
 
-        handler = new Handler();
-        updateUI.run();
+        setTask();
+
+        if (TaskList.tasks.isEmpty() && !TaskList.initialRequestCompleted) {
+            handler = new Handler();
+            updateUI.run();
+        }
     }
 
     @Override
@@ -94,10 +96,12 @@ public class HomeFragment extends Fragment {
             try {
                 setName();
                 setTask();
-                TaskList.loadTasks();
+                if (!TaskList.initialRequestStarted) {
+                    TaskList.loadTasks();
+                }
             } finally {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (!TaskList.initialRequestComplete || user == null){
+                if (!TaskList.initialRequestCompleted || user == null){
                     handler.postDelayed(updateUI, 300);
                 }
             }

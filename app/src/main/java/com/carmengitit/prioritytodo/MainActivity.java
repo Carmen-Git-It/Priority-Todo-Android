@@ -31,7 +31,6 @@ import android.view.MenuItem;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Timer;
 
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "Testing";
@@ -108,7 +107,8 @@ public class MainActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<Void> task) {
                             Log.i(TAG, "User signed out");
                             TaskList.userRegistered = false;
-                            TaskList.initialRequestComplete = false;
+                            TaskList.initialRequestStarted = false;
+                            TaskList.initialRequestCompleted = false;
                             TaskList.tasks.clear();
 
                             List<AuthUI.IdpConfig> providers = Arrays.asList(

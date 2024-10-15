@@ -9,7 +9,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -28,66 +27,32 @@ public class TaskList {
 
     public static boolean userRegistered = false;
     public static boolean queryComplete = false;
-    public static boolean initialRequestComplete = false;
-
-    public static void checkUserRegistered() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        Log.d(MainActivity.TAG, "Checking user registration");
-
-        queryComplete = false;
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null) {
-            DocumentReference docRef = db.collection("users").document(user.getUid());
-            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull com.google.android.gms.tasks.Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        Log.i(MainActivity.TAG, "User already registered");
-                        userRegistered = true;
-                    } else {
-                        Log.i(MainActivity.TAG, "User is not registered");
-                        userRegistered = false;
-                    }
-                    queryComplete = true;
-                }
-            });
-        }
-    }
+    public static boolean initialRequestStarted = false;
+    public static boolean initialRequestCompleted = false;
 
     public static void registerUser() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            if (!userRegistered) {
-                checkUserRegistered();
+            Log.d(MainActivity.TAG, "Attempting to register user");
 
-                long timeOut = System.currentTimeMillis() + 60000;
-
-                Log.d(MainActivity.TAG, "Attempting to register");
-                // Set timeout to 1 minute
-//                while(!queryComplete && timeOut > System.currentTimeMillis()) {
-//                    // Wait until query is complete
-//                }
-
-                queryComplete = false;
-                Map<String, Object> name = new HashMap<>();
-                name.put("name", user.getDisplayName());
-                db.collection("users")
-                        .document(user.getUid())
-                        .set(name)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    userRegistered = true;
-                                    Log.i(MainActivity.TAG, "New user registered");
-                                }
-                                queryComplete = true;
+            queryComplete = false;
+            Map<String, Object> name = new HashMap<>();
+            name.put("name", user.getDisplayName());
+            db.collection("users")
+                    .document(user.getUid())
+                    .set(name)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                userRegistered = true;
+                                Log.i(MainActivity.TAG, "User registered");
                             }
-                        });
-            }
+                            queryComplete = true;
+                        }
+                    });
         }
     }
 
@@ -98,6 +63,7 @@ public class TaskList {
 
         if (user != null && userRegistered) {
             queryComplete = false;
+            initialRequestStarted = true;
 
             db.collection("users")
                     .document(user.getUid())
@@ -106,7 +72,6 @@ public class TaskList {
                         @Override
                         public void onComplete(@NonNull com.google.android.gms.tasks.Task<QuerySnapshot> task) {
                             Log.i(MainActivity.TAG, "Get all tasks request completed");
-                            initialRequestComplete = true;
                             queryComplete = true;
                             if(task.isSuccessful()) {
                                 tasks.clear();
@@ -120,9 +85,12 @@ public class TaskList {
                                 }
                                 Log.i(MainActivity.TAG, "Tasks loaded");
                                 sortTasks();
+                                initialRequestCompleted = true;
                             }
                         }
                     });
+        } else {
+            Log.i(MainActivity.TAG, "Delaying task request while user is registered");
         }
     }
 
