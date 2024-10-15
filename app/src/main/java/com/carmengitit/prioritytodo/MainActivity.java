@@ -10,7 +10,6 @@ import com.firebase.ui.auth.IdpResponse;
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -18,26 +17,24 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
-import android.view.View;
 
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.carmengitit.prioritytodo.databinding.ActivityMainBinding;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
+import java.util.Timer;
 
 public class MainActivity extends AppCompatActivity {
+    public static final String TAG = "Testing";
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMainBinding binding;
@@ -55,9 +52,7 @@ public class MainActivity extends AppCompatActivity {
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        Log.i("MEOW", "HELLO");
         if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-            Log.i("MEOW", "signed in");
             List<AuthUI.IdpConfig> providers = Arrays.asList(
                     new AuthUI.IdpConfig.AnonymousBuilder().build(),
                     new AuthUI.IdpConfig.EmailBuilder().build(),
@@ -70,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
                     .build();
 
             signInLauncher.launch(signInIntent);
+        } else {
+            TaskList.registerUser();
+            TaskList.loadTasks();
         }
     }
 
@@ -108,6 +106,10 @@ public class MainActivity extends AppCompatActivity {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
+                            Log.i(TAG, "User signed out");
+                            TaskList.userRegistered = false;
+                            TaskList.initialRequestComplete = false;
+                            TaskList.tasks.clear();
 
                             List<AuthUI.IdpConfig> providers = Arrays.asList(
                                     new AuthUI.IdpConfig.AnonymousBuilder().build(),
@@ -144,7 +146,9 @@ public class MainActivity extends AppCompatActivity {
         IdpResponse response = result.getIdpResponse();
         if (result.getResultCode() == RESULT_OK) {
             // Successful sign-in
-            Log.i("FIREBASE", "Successfully signed in.");
+            Log.i(TAG, "User signed in.");
+            TaskList.registerUser();
+            TaskList.loadTasks();
         }
     }
 

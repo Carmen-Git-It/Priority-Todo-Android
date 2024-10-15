@@ -1,6 +1,7 @@
 package com.carmengitit.prioritytodo;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import java.text.DateFormat;
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
+    private Handler handler;
 
     @Override
     public View onCreateView(
@@ -56,6 +58,53 @@ public class HomeFragment extends Fragment {
                         .navigate(R.id.action_FirstFragment_to_SecondFragment)
         );
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user != null && user.getDisplayName() != null && !user.getDisplayName().isEmpty()) {
+            binding.txtHomeWelcome.setText("Welcome " + user.getDisplayName());
+        }
+
+        handler = new Handler();
+        updateUI.run();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (TaskList.tasks.isEmpty()) {
+            updateUI.run();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        handler.removeCallbacks(updateUI);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        handler.removeCallbacks(updateUI);
+    }
+
+    Runnable updateUI = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                setName();
+                setTask();
+                TaskList.loadTasks();
+            } finally {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (!TaskList.initialRequestComplete || user == null){
+                    handler.postDelayed(updateUI, 300);
+                }
+            }
+        }
+    };
+
+    private void setName() {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null && user.getDisplayName() != null && !user.getDisplayName().isEmpty()) {
