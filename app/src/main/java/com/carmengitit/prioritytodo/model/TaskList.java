@@ -6,9 +6,11 @@ import androidx.annotation.NonNull;
 
 import com.carmengitit.prioritytodo.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -81,6 +83,7 @@ public class TaskList {
                                             (long) document.get("priority"),
                                             new Date((long)document.get("date")),
                                             (boolean)document.get("complete"));
+                                    newTask.uid = document.getId();
                                     tasks.add(newTask);
                                 }
                                 Log.i(MainActivity.TAG, "Tasks loaded");
@@ -111,12 +114,14 @@ public class TaskList {
                 db.collection("users")
                         .document(user.getUid())
                         .collection("tasks")
-                        .document("0")
-                        .set(task_map)
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        .add(task_map)
+                        .addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                             @Override
-                            public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                            public void onComplete(@NonNull com.google.android.gms.tasks.Task<DocumentReference> task) {
                                 if (task.isSuccessful()) {
+                                    new_task.uid = task.getResult().getId();
+                                    tasks.add(new_task);
+                                    sortTasks();
                                     Log.i(MainActivity.TAG, "Successfully created collection");
                                 } else {
                                     Log.e(MainActivity.TAG, "Failed to create collection: " + task.getException());
@@ -141,6 +146,51 @@ public class TaskList {
         }
     }
 
+    private static void dbEditTask(Task task) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        Log.d(MainActivity.TAG, "Editing task");
+
+        if (user != null) {
+            db.collection("users")
+                    .document(user.getUid())
+                    .collection("tasks")
+                    .document(task.uid)
+                    .update("complete", task.complete,
+                            "date", task.dateDue.getTime(),
+                            "description", task.description,
+                            "name", task.name,
+                            "priority", task.priority)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Log.d(MainActivity.TAG, "Task successfully edited.");
+                            } else {
+                                Log.d(MainActivity.TAG, "Failed to update task");
+                            }
+                        }
+                    });
+        }
+    }
+
+    public static void editTask(int index, Task task) {
+        if (index >= 0 && index < tasks.size() && task != null) {
+            // Make the change locally
+            if (task.complete) {
+                tasks.remove(index);
+                complete_tasks.add(task);
+            } else {
+                //tasks.set(index, task);
+                sortTasks();
+            }
+
+            dbEditTask(task);
+        }
+    }
+
     public static void removeTask(int index) {
         if (index >= tasks.size()) {
             return;
@@ -157,6 +207,14 @@ public class TaskList {
         }
 
         return tasks.get(current_index);
+    }
+
+    public static Task getTask(int index) {
+        if (tasks.isEmpty() || index >= tasks.size()) {
+            return null;
+        }
+
+        return tasks.get(index);
     }
 
     public static void skipTask() {
@@ -210,10 +268,6 @@ public class TaskList {
         Task task = new Task(name, description, priority, dateDue);
 
         dbAddTask(task);
-
-        tasks.add(task);
-
-        sortTasks();
     }
 
     public static class Task{
@@ -222,6 +276,7 @@ public class TaskList {
         public long priority;
         public Date dateDue;
         public boolean complete;
+        public String uid;
 
         public Task(String name, String description, long priority, Date dateDue) {
             this.name = name;

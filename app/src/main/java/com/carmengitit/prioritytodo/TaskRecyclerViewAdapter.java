@@ -1,7 +1,10 @@
 package com.carmengitit.prioritytodo;
 
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +14,7 @@ import com.carmengitit.prioritytodo.databinding.FragmentTaskListBinding;
 import com.carmengitit.prioritytodo.model.TaskList;
 import com.carmengitit.prioritytodo.model.TaskList.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 
 import java.text.DateFormat;
 import java.util.List;
@@ -50,6 +54,16 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
                 notifyItemRemoved(currPos);
             }
         });
+
+        holder.mCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putInt("index", holder.getBindingAdapterPosition());
+                Navigation.findNavController(holder.itemView)
+                        .navigate(R.id.action_list_to_edit_task, bundle);
+            }
+        });
     }
 
     @Override
@@ -63,6 +77,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
         public final TextView mPriorityView;
         public final TextView mDateView;
         public final MaterialButton mDeleteButtonView;
+        public final MaterialCardView mCardView;
         public Task mItem;
 
         public ViewHolder(FragmentTaskListBinding binding) {
@@ -72,6 +87,7 @@ public class TaskRecyclerViewAdapter extends RecyclerView.Adapter<TaskRecyclerVi
             mPriorityView = binding.txtTaskCardPriority;
             mDateView = binding.txtTaskCardDate;
             mDeleteButtonView = binding.btnTaskCardDelete;
+            mCardView = binding.cardTaskListItem;
         }
 
         @Override

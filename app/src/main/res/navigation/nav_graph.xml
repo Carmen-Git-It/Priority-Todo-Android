@@ -29,6 +29,16 @@
         android:id="@+id/action_list"
         android:name="com.carmengitit.prioritytodo.TaskListFragment"
         android:label="Task List"
-        tools:layout="@layout/fragment_task_list">
+        tools:layout="@layout/fragment_task_list"
+        >
+        <action
+            android:id="@+id/action_list_to_edit_task"
+            app:destination="@id/EditTask" />
+    </fragment>
+    <fragment
+        android:id="@+id/EditTask"
+        android:name="com.carmengitit.prioritytodo.EditTaskFragment"
+        android:label="Edit Task"
+        tools:layout="@layout/fragment_edit_task">
     </fragment>
 </navigation>

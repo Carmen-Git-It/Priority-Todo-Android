@@ -101,7 +101,7 @@ public class HomeFragment extends Fragment {
                 }
             } finally {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (!TaskList.initialRequestCompleted || user == null){
+                if (!TaskList.initialRequestCompleted || user == null || TaskList.tasks.isEmpty()){
                     handler.postDelayed(updateUI, 300);
                 }
             }
