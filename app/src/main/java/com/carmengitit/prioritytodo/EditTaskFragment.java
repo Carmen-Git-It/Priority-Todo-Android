@@ -89,16 +89,28 @@ public class EditTaskFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     binding.textlayoutEditTaskName.setError(null);
-                    binding.textlayoutEditTaskDate.setError(null);
+                    binding.textlayoutEditTaskDescr.setError(null);
 
                     if (binding.etEditTaskName.getText() == null
                     || binding.etEditTaskName.getText().toString().isEmpty()) {
                         binding.textlayoutEditTaskName
-                                .setError("Error, task names must not be blank.");
+                                .setError("Task names must not be blank.");
                         return;
                     }
 
                     if (binding.etEditTaskDescr.getText() == null) {
+                        return;
+                    }
+
+                    if (binding.etEditTaskName.getText().toString().length() > 30) {
+                        binding.textlayoutEditTaskName.setError("Name must be 30 characters or less");
+                        binding.etEditTaskName.requestFocus();
+                        return;
+                    }
+
+                    if (binding.etEditTaskDescr.getText().toString().length() > 200) {
+                        binding.textlayoutEditTaskDescr.setError("Description must be 200 characters or less");
+                        binding.etEditTaskDescr.requestFocus();
                         return;
                     }
 

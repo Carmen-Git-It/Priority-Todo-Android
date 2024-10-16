@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 
 import com.carmengitit.prioritytodo.MainActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -15,6 +14,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,9 +22,9 @@ import java.util.Map;
 
 public class TaskList {
     public static final List<Task> tasks = new ArrayList<Task>();
-    public static final List<Task> complete_tasks = new ArrayList<Task>();
+    public static final List<Task> completedTasks = new ArrayList<Task>();
 
-    private static int current_index = 0;
+    private static int currentIndex = 0;
 
     public static boolean userRegistered = false;
     public static boolean queryComplete = false;
@@ -76,6 +76,7 @@ public class TaskList {
                             queryComplete = true;
                             if(task.isSuccessful()) {
                                 tasks.clear();
+                                completedTasks.clear();
                                 for (QueryDocumentSnapshot document : task.getResult()) {
 
                                     Task newTask = new Task((String)document.get("name"),
@@ -87,12 +88,13 @@ public class TaskList {
                                     if (!(boolean) document.get("complete")) {
                                         tasks.add(newTask);
                                     } else {
-                                        complete_tasks.add(newTask);
+                                        completedTasks.add(newTask);
                                     }
 
                                 }
                                 Log.i(MainActivity.TAG, "Tasks loaded");
                                 sortTasks();
+                                Collections.reverse(completedTasks);
                                 initialRequestCompleted = true;
                             }
                         }
@@ -197,7 +199,7 @@ public class TaskList {
             // Make the change locally
             if (task.complete) {
                 tasks.remove(index);
-                complete_tasks.add(task);
+                completedTasks.add(0, task);
             } else {
                 //tasks.set(index, task);
                 sortTasks();
@@ -216,8 +218,8 @@ public class TaskList {
         Task task = tasks.get(index);
         tasks.remove(index);
 
-        if (current_index >= tasks.size()) {
-            current_index = tasks.size() - 1;
+        if (currentIndex >= tasks.size()) {
+            currentIndex = tasks.size() - 1;
         }
 
         dbRemoveTask(task);
@@ -228,7 +230,7 @@ public class TaskList {
             return null;
         }
 
-        return tasks.get(current_index);
+        return tasks.get(currentIndex);
     }
 
     public static Task getTask(int index) {
@@ -243,9 +245,9 @@ public class TaskList {
         if (tasks.isEmpty()) {
             return;
         }
-        current_index++;
-        if (current_index >= tasks.size()) {
-            current_index = 0;
+        currentIndex++;
+        if (currentIndex >= tasks.size()) {
+            currentIndex = 0;
         }
     }
 
@@ -254,12 +256,12 @@ public class TaskList {
         if (tasks.isEmpty()) {
             return;
         }
-        Task task = tasks.get(current_index);
+        Task task = tasks.get(currentIndex);
         task.complete = true;
-        complete_tasks.add(task);
-        tasks.remove(current_index);
-        if (current_index >= tasks.size() && !tasks.isEmpty()) {
-            current_index = tasks.size() - 1;
+        completedTasks.add(0, task);
+        tasks.remove(currentIndex);
+        if (currentIndex >= tasks.size() && !tasks.isEmpty()) {
+            currentIndex = tasks.size() - 1;
         }
 
         // Push change to db
@@ -271,10 +273,10 @@ public class TaskList {
         // Local changes
         Task task = tasks.get(index);
         task.complete = true;
-        complete_tasks.add(task);
+        completedTasks.add(0, task);
         tasks.remove(index);
-        if (current_index >= tasks.size()) {
-            current_index = tasks.size() - 1;
+        if (currentIndex >= tasks.size()) {
+            currentIndex = tasks.size() - 1;
         }
 
         // Push change to db
@@ -282,7 +284,7 @@ public class TaskList {
     }
 
     public static void resetIndex() {
-        current_index = 0;
+        currentIndex = 0;
     }
 
     private static void sortTasks() {
@@ -343,10 +345,10 @@ public class TaskList {
             long value;
 
             if (daysLeft > 0) {
-                value = (((priority + 1)^3) * 1000) / daysLeft;
+                value = (long)((Math.pow((double)(priority + 1), (double)3)) * 1000) / daysLeft;
             }
             else {
-                value = ((priority + 1)^2) * 10000 + (long) (-20000) * daysLeft;
+                value = (long)(Math.pow((priority + 1), 2) * 10000 + (long) (-20000) * daysLeft);
             }
 
             return value;

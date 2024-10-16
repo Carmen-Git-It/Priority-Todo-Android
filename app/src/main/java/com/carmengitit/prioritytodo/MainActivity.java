@@ -94,6 +94,11 @@ public class MainActivity extends AppCompatActivity {
             navController.navigate(R.id.action_list);
         }
 
+        if (id == R.id.action_completed_list) {
+            NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
+            navController.navigate(R.id.action_completed_list);
+        }
+
         if (id == R.id.action_home) {
             NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
             navController.navigate(R.id.Home);
@@ -149,6 +154,19 @@ public class MainActivity extends AppCompatActivity {
             Log.i(TAG, "User signed in.");
             TaskList.registerUser();
             TaskList.loadTasks();
+        } else {
+            List<AuthUI.IdpConfig> providers = Arrays.asList(
+                    new AuthUI.IdpConfig.AnonymousBuilder().build(),
+                    new AuthUI.IdpConfig.EmailBuilder().build(),
+                    new AuthUI.IdpConfig.GoogleBuilder().build()
+            );
+
+            Intent signInIntent = AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setAvailableProviders(providers)
+                    .build();
+
+            signInLauncher.launch(signInIntent);
         }
     }
 

@@ -12,7 +12,13 @@
         android:id="@+id/action_list"
         android:icon="@drawable/baseline_view_list_24"
         android:orderInCategory="100"
-        android:title="All Tasks"
+        android:title="Tasks"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_completed_list"
+        android:icon="@drawable/baseline_checklist_24"
+        android:orderInCategory="100"
+        android:title="Completed Tasks"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_settings"

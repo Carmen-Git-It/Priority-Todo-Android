@@ -112,13 +112,13 @@ public class AddTaskFragment extends Fragment {
         }
 
         if (name.isEmpty()) {
-            binding.textlayoutAddTaskName.setError("Name Cannot Be Empty");
+            binding.textlayoutAddTaskName.setError("Task names must not be blank.");
             binding.etAddTaskName.requestFocus();
             return;
         }
 
-        if (name.length() > 25) {
-            binding.textlayoutAddTaskName.setError("Name Too Long");
+        if (name.length() > 30) {
+            binding.textlayoutAddTaskName.setError("Name must be 30 characters or less");
             binding.etAddTaskName.requestFocus();
             return;
         }
@@ -126,6 +126,13 @@ public class AddTaskFragment extends Fragment {
         if (description.isEmpty()) {
             description = "";
         }
+
+        if (description.length() > 200) {
+            binding.textlayoutAddTaskDescr.setError("Description must be 200 characters or less");
+            binding.etAddTaskDescr.requestFocus();
+            return;
+        }
+
         TaskList.addTask(name, description, priority, date);
 
         NavHostFragment.findNavController(AddTaskFragment.this)

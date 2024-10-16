@@ -41,4 +41,11 @@
         android:label="Edit Task"
         tools:layout="@layout/fragment_edit_task">
     </fragment>
+    <fragment
+        android:id="@+id/action_completed_list"
+        android:name="com.carmengitit.prioritytodo.CompletedTaskListFragment"
+        android:label="Completed Task List"
+        tools:layout="@layout/fragment_item_task_completed">
+    </fragment>
+
 </navigation>

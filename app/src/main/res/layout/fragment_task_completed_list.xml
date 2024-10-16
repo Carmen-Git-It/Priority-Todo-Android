@@ -10,7 +10,7 @@
     android:orientation="horizontal">
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_task_list_item"
+        android:id="@+id/card_completed_task_list_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -19,7 +19,7 @@
             android:layout_height="match_parent">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/txt_task_card_name"
+                android:id="@+id/txt_completed_task_card_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -27,12 +27,12 @@
                 android:layout_marginEnd="16dp"
                 android:text="Name"
                 android:textAppearance="?attr/textAppearanceListItem"
-                app:layout_constraintEnd_toStartOf="@+id/btn_task_card_complete"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/txt_task_card_description"
+                android:id="@+id/txt_completed_task_card_description"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -40,12 +40,12 @@
                 android:layout_marginEnd="16dp"
                 android:text="Description"
                 android:textAppearance="?attr/textAppearanceListItem"
-                app:layout_constraintEnd_toStartOf="@+id/btn_task_card_complete"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txt_task_card_name" />
+                app:layout_constraintTop_toBottomOf="@+id/txt_completed_task_card_name" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/txt_task_card_priority"
+                android:id="@+id/txt_completed_task_card_priority"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -53,12 +53,12 @@
                 android:layout_marginEnd="16dp"
                 android:text="Priority"
                 android:textAppearance="?attr/textAppearanceListItem"
-                app:layout_constraintEnd_toStartOf="@+id/btn_task_card_delete"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txt_task_card_description" />
+                app:layout_constraintTop_toBottomOf="@+id/txt_completed_task_card_description" />
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/txt_task_card_date"
+                android:id="@+id/txt_completed_task_card_date"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -68,37 +68,10 @@
                 android:text="Date"
                 android:textAppearance="?attr/textAppearanceListItem"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/btn_task_card_delete"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/txt_task_card_priority" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_task_card_complete"
-                style="@style/Widget.Material3.Button.IconButton.Filled"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                app:backgroundTint="@color/md_theme_primary"
-                app:icon="@drawable/baseline_check_24"
-                app:iconSize="32dp"
-                app:layout_constraintBottom_toTopOf="@+id/btn_task_card_delete"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_task_card_delete"
-                style="@style/Widget.Material3.Button.IconButton.Filled"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                app:backgroundTint="@color/md_theme_error"
-                app:icon="@drawable/baseline_delete_32"
-                app:iconSize="32dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/txt_completed_task_card_priority" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
